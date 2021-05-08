@@ -4,6 +4,9 @@ gem 'hotwire-rails'
 bundle install
 rails hotwire:install
 
+app/javascript/packs/application.js:
+import "@hotwired/turbo-rails"
+
 app/models/tweet.rb:
 after_create_commit { broadcast_prepend_to "tweets" }
 # "tweets" needs to refer to a frame on the page with the same name
@@ -11,5 +14,11 @@ after_create_commit { broadcast_prepend_to "tweets" }
 views/tweets/index/html.erb - wrap tweets in:
 <%= turbo_frame_tag 'tweets' do %>
 
-also add - tells ActionCable channel to stream from that stream:
+also add - tells ActionCable channel to listen to that stream:
 <%= turbo_stream_from "tweets" %>
+
+---
+
+app/models/tweet/rb - this doesn't work because we need to wrap each tweet in a frame:
+after_update_commit { broadcast_replace_to "tweets" }
+after_destroy_commit { broadcast_remove_to "tweets" }
