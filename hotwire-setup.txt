@@ -1,0 +1,15 @@
+Gemfile:
+gem 'hotwire-rails'
+
+bundle install
+rails hotwire:install
+
+app/models/tweet.rb:
+after_create_commit { broadcast_prepend_to "tweets" }
+# "tweets" needs to refer to a frame on the page with the same name
+
+views/tweets/index/html.erb - wrap tweets in:
+<%= turbo_frame_tag 'tweets' do %>
+
+also add - tells ActionCable channel to stream from that stream:
+<%= turbo_stream_from "tweets" %>
