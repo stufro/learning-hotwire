@@ -8,7 +8,7 @@
 
 <%= turbo_stream_from 'tweets' %>
 <%= turbo_frame_tag 'tweets' do %>
-  <%= render @tweets %>
+  <%= render @tweets.reverse %>
 <% end %>
 
 <br>
