@@ -28,6 +28,7 @@ class TweetsController < ApplicationController
         format.html { redirect_to tweets_path, notice: "Tweet was successfully created." }
         format.json { render :show, status: :created, location: @tweet }
       else
+        format.turbo_stream { render turbo_stream: turbo_stream.replace(@tweet, partial: "tweets/form", locals: {tweet: @tweet})}
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @tweet.errors, status: :unprocessable_entity }
       end

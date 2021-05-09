@@ -3,7 +3,9 @@
 <h1>Tweets</h1>
 
 <div class="card">
-  <%= render 'form', tweet: Tweet.new %>
+  <%= turbo_frame_tag "tweet_form" do %>
+    <%= render 'form', tweet: Tweet.new %>
+  <% end %>
 </div>
 
 <%= turbo_stream_from 'tweets' %>
