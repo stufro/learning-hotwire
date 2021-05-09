@@ -1,3 +1,4 @@
+--- Installation
 Gemfile:
 gem 'hotwire-rails'
 
@@ -7,6 +8,7 @@ rails hotwire:install
 app/javascript/packs/application.js:
 import "@hotwired/turbo-rails"
 
+--- Dynamic creation
 app/models/tweet.rb:
 after_create_commit { broadcast_prepend_to "tweets" }
 # "tweets" needs to refer to a frame on the page with the same name
@@ -17,8 +19,14 @@ views/tweets/index/html.erb - wrap tweets in:
 also add - tells ActionCable channel to listen to that stream:
 <%= turbo_stream_from "tweets" %>
 
----
-
-app/models/tweet/rb - this doesn't work because we need to wrap each tweet in a frame:
+--- Dynamic update/destroy
+app/models/tweet.rb - this doesn't work because we need to wrap each tweet in a frame:
 after_update_commit { broadcast_replace_to "tweets" }
 after_destroy_commit { broadcast_remove_to "tweets" }
+
+app/views/_tweet.html.erb - wrap tweet:
+<%= turbo_frame_tag dom_id(tweet) do %>
+
+--- Turbo with the form
+
+
