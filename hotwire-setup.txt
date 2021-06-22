@@ -8,6 +8,7 @@ rails hotwire:install
 app/javascript/packs/application.js:
 import "@hotwired/turbo-rails"
 
+================================
 --- Dynamic creation
 app/models/tweet.rb:
 after_create_commit { broadcast_prepend_to "tweets" }
@@ -19,6 +20,7 @@ app/views/tweets/index.html.erb - wrap tweets in:
 also add - tells ActionCable channel to listen to that stream:
 <%= turbo_stream_from "tweets" %>
 
+================================
 --- Dynamic update/destroy
 app/models/tweet.rb - this doesn't work because we need to wrap each tweet in a frame:
 after_update_commit { broadcast_replace_to "tweets" }
@@ -27,6 +29,7 @@ after_destroy_commit { broadcast_remove_to "tweets" }
 app/views/tweets/_tweet.html.erb - wrap tweet:
 <%= turbo_frame_tag dom_id(tweet) do %>
 
+================================
 --- Turbo with the form
 app/views/tweets/index.html.erb - wrap form in:
 <%= turbo_frame_tag "tweet_form" do %>
@@ -47,6 +50,7 @@ app/views/tweets/_form.html.erb - add to form:
 - Cool thing is for the success case, we don't have a turbo_stream repsonse, it will use HTML by default. 
 - Turbo will request that HTML asyncronously, then look for a matching turbo frame in that response and just replace the content of the frame.
 
+================================
 --- Edit/Update via form
 - When you click edit, again Turbo is intercepting the request to fetch the HTML via AJAX. But the response it gets has no turbo_frame_tag in it so it's got nothing to replace.
 
@@ -67,4 +71,41 @@ app/views/tweets/show.html.erb - replace main content:
   <%= render @tweet %>
 <% end %>
 
+================================
+--- Likes & Retweets
+routes.rb:
+resources :tweets do
+  resource :like
+  resource :retweet
+end
+
+app/controllers/likes_controller.rb:
+class LikesController < ApplicationController
+  def create
+    @tweet = Tweet.find(params[:tweet_id])
+    @tweet.increment! :likes
+    redirect_to @tweet
+  end
+end
+
+app/views/tweets/_tweet.html.erb:
+<p><%= button_to "Like (#{tweet.likes})", tweet_like_path(tweet) %> | Retweets: <%= tweet.retweets %></p>
+
+app/controllers/retweets_controller.rb:
+class RetweetsController < ApplicationController
+  def create
+    @tweet = Tweet.find(params[:tweet_id])
+    @tweet.increment! :retweets
+    redirect_to @tweet
+  end
+end
+
+app/views/tweets/_tweet.html.erb:
+<p><%= button_to "Like (#{tweet.likes})", tweet_like_path(tweet) %> | <%= button_to "Retweets (#{tweet.retweets})", tweet_retweet_path(tweet) %></p>
+
+- sort out uglyness:
+        <div style="display: flex">
+          <div><%= button_to "Like (#{tweet.likes})", tweet_like_path(tweet) %></div>
+          <div><%= button_to "Retweets (#{tweet.retweets})", tweet_retweet_path(tweet) %></div>
+        </div>
 
