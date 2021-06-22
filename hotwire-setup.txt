@@ -43,4 +43,28 @@ format.turbo_stream { render turbo_stream: turbo_stream.replace(@tweet, partial:
 app/views/tweets/_form.html.erb - add to form:
 , id: dom_id(tweet)
 
-- Now it works and we can check the network tab on devtools to see what it sent
+- Now validation works and we can check the network tab on devtools to see what it sent.
+- Cool thing is for the success case, we don't have a turbo_stream repsonse, it will use HTML by default. 
+- Turbo will request that HTML asyncronously, then look for a matching turbo frame in that response and just replace the content of the frame.
+
+--- Edit/Update via form
+- When you click edit, again Turbo is intercepting the request to fetch the HTML via AJAX. But the response it gets has no turbo_frame_tag in it so it's got nothing to replace.
+
+app/views/tweets/edit.html.erb - wrap form partial:
+<%= turbo_frame_tag dom_id(@tweet) do %>
+
+- This works but it doesn't match the others now because it's not in a card, put the card inside the frame:
+<div class="card card-body">
+
+- In order to add a cancel button, rather than linking to index page, link to the tweet itself. This is because the show page will have a turbo frame tag
+  in it with the content of the tweet.
+
+app/views/tweets/edit.html.erb
+<%= link_to "Cancel", @tweet %>
+
+app/views/tweets/show.html.erb - replace main content:
+<%= turbo_frame_tag dom_id(@tweet) do %>
+  <%= render @tweet %>
+<% end %>
+
+
