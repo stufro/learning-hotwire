@@ -11,9 +11,11 @@
     </div>
   <% end %>
 
-  <div class="field">
+  <div class="field" data-controller="tweet">
     <%= form.label :body %>
-    <%= form.text_field :body, autocomplete: "off" %>
+    <%= form.text_field :body, autocomplete: "off", "data-action" => "keyup->tweet#updateCharsRemaining", "data-tweet-target" => "tweetBody" %>
+    <span data-tweet-target="charactersRemaining">140</span>
+    <span> characters remaining</span>
   </div>
 
   <div class="actions">
