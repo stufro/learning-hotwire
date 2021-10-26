@@ -1,0 +1,22 @@
+
+================================
+app/javascript/controllers/hello_controller.js - Create Stimulus Controller
+import { Controller } from "stimulus"
+
+export default class extends Controller {
+  connect() {
+    console.log("Hello World!");
+  }
+}
+
+app/views/tweets/index.html.erb - Connect element to controller
+<div class="card" data-controller="hello">
+
+================================
+app/views/tweets/index.html.erb - below controller card
+<input type="text" data-hello-target="input"> 
+<button class="primary-button" data-action="click->hello#greet">Say Hello</button>
+<p data-hello-target="output"></p>
+
+
+app/javascript/controllers/hello_controller.js

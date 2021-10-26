@@ -2,7 +2,11 @@
 
 <h1>Tweets</h1>
 
-<div class="card">
+<div class="card" data-controller="hello">
+  <input type="text" data-hello-target="input"> 
+  <button class="primary-button" data-action="click->hello#greet">Say Hello</button>
+  <p data-hello-target="output"></p>
+
   <%= turbo_frame_tag "tweet_form" do %>
     <%= render 'form', tweet: Tweet.new %>
   <% end %>
